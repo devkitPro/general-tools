@@ -1,38 +1,12 @@
-/*
-	"$Id: bmp2bin.cpp,v 1.1 2005-02-02 13:34:02 wntrmute Exp $"
-
-	DevkitPro bmp utility
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-	USA.
-
-	Please report all bugs and problems through the bug tracker at
-	"http://sourceforge.net/tracker/?group_id=114505&atid=668551".
-
-	"$Header: /lvm/shared/ds/ds/cvs/devkitpro-cvsbackup/tools/general/bmp2bin.cpp,v 1.1 2005-02-02 13:34:02 wntrmute Exp $"
-
-*/
-
-//---------------------------------------------------------------------------------
-// bmp2bin.cpp
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// bmp2bin.cpp                                                              //
+//////////////////////////////////////////////////////////////////////////////
 /*
         Bitmap to binary converter
         by Rafael Vuijk (aka Dark Fader)
 
         History:
+                V1.06 - added support for MirkoSDK sprite format
                 v1.05 - palette output code for gp32 by mr.spiv
                 v1.04+ - bigendian support by mr.spiv
                 v1.04 - .act & MS palette loading support, palette quantization method 1
@@ -42,13 +16,22 @@
                 v1.00 - seperate versions for each platform
 */
 
+//////////////////////////////////////////////////////////////////////////////
+// Includes                                                                 //
+//////////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
 
+//////////////////////////////////////////////////////////////////////////////
+// Defines                                                                  //
+//////////////////////////////////////////////////////////////////////////////
 #define VER                                     "1.04"
 #define VERF                                    "1.05"
 #define ALIGN4(n)                       (((n)+3) &~ 3)
 
 
+//////////////////////////////////////////////////////////////////////////////
+// Typedefs                                                                 //
+//////////////////////////////////////////////////////////////////////////////
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
@@ -110,6 +93,9 @@ static LONG endiaL( LONG w ) {
 #endif
 }
 
+//
+//
+//
 
 #pragma pack(1)
 
@@ -152,6 +138,9 @@ typedef struct tagBITMAPINFOHEADER{             // size 40 bytes
 
 typedef void WritePixel(const RGBTRIPLE *p);
 
+//////////////////////////////////////////////////////////////////////////////
+// Variables                                                                //
+//////////////////////////////////////////////////////////////////////////////
 static char *inputFile;
 static char *outputFile;
 static char *paletteFile;
@@ -166,11 +155,11 @@ static FILE *fi;
 static FILE *fo;
 static FILE *fp = NULL;
 
+//
+//
+//
 
-//---------------------------------------------------------------------------------
-static int writePaletteGP( RGBQUAD* p, int fmt, FILE *fp )
-//---------------------------------------------------------------------------------
-{
+static int writePaletteGP( RGBQUAD* p, int fmt, FILE *fp ) {
         int m,n;
         RGBQUAD q;
 
@@ -196,16 +185,18 @@ static int writePaletteGP( RGBQUAD* p, int fmt, FILE *fp )
 
 
 
-//---------------------------------------------------------------------------------
-static inline unsigned long Sqr(unsigned int n)
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// Sqr                                                                      //
+//////////////////////////////////////////////////////////////////////////////
+inline unsigned long Sqr(unsigned int n)
 {
         return n*n;
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// Dist1                                                                    //
+//////////////////////////////////////////////////////////////////////////////
 unsigned long Dist1(const RGBTRIPLE *a, const RGBTRIPLE *b)
-//---------------------------------------------------------------------------------
 {
         return
         (
@@ -215,67 +206,74 @@ unsigned long Dist1(const RGBTRIPLE *a, const RGBTRIPLE *b)
         );
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// WritePixelP1                                                             //
+//////////////////////////////////////////////////////////////////////////////
 void WritePixelP1(const RGBTRIPLE *p)           // '1': 8 bits palette (method 1)
-//---------------------------------------------------------------------------------
 {
         unsigned char out;
         unsigned long bestDist = (unsigned long)-1;
-
+        
         for (int i=0; i<256; i++)
         {
                 unsigned long dist = Dist1(p, &palette[i]);
                 if (dist < bestDist) { bestDist = dist; out = i; }
         }
-
+        
         fwrite(&out, 1, 1, fo);
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// WritePixel24                                                             //
+//////////////////////////////////////////////////////////////////////////////
 void WritePixel24(const RGBTRIPLE *p)   // 't': 24 bits
-//---------------------------------------------------------------------------------
 {
         fwrite(&p->rgbtRed, 1, 1, fo);
         fwrite(&p->rgbtGreen, 1, 1, fo);
         fwrite(&p->rgbtBlue, 1, 1, fo);
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// WritePixel8                                                              //
+//////////////////////////////////////////////////////////////////////////////
 void WritePixel8(const RGBTRIPLE *p)            // 'e': 8 bits (b2g3r3)
-//---------------------------------------------------------------------------------
 {
         unsigned char out = (p->rgbtBlue>>6<<6) | (p->rgbtGreen>>5<<3) | (p->rgbtRed>>5<<0);
         fwrite(&out, 1, 1, fo);
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// WritePixelGP8                                                            //
+//////////////////////////////////////////////////////////////////////////////
 void WritePixelGP8(const RGBTRIPLE *p)          // 'i': 8 bits (LUT, GamePark)
-//---------------------------------------------------------------------------------
 {
         unsigned char out = p->rgbtRed;
  // hack by Mr.Spiv
         fwrite(&out, 1, 1, fo);
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// WritePixelGP32                                                           //
+//////////////////////////////////////////////////////////////////////////////
 void WritePixelGP32(const RGBTRIPLE *p)         // 'p': 16 bits (r5g5b5x1, GamePark)
-//---------------------------------------------------------------------------------
 {
         unsigned short out = endiaW((p->rgbtBlue>>3<<1) | (p->rgbtGreen>>3<<6) | (p->rgbtRed>>3<<11));
-       fwrite(&out, 2, 1, fo);
+        fwrite(&out, 2, 1, fo);
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// WritePixelGB                                                             //
+//////////////////////////////////////////////////////////////////////////////
 void WritePixelGB(const RGBTRIPLE *p)           // 'g': 16 bits (x1b5g5r5, GameBoy)
-//---------------------------------------------------------------------------------
 {
         unsigned short out = (p->rgbtBlue>>3<<10) | (p->rgbtGreen>>3<<5) | (p->rgbtRed>>3<<0);
         fwrite(&out, 2, 1, fo);
 }
 
-//---------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+// main                                                                     //
+//////////////////////////////////////////////////////////////////////////////
 int main(int argc, char *argv[])
-//---------------------------------------------------------------------------------
 {
         // parse parameters
         for (int a=1; a<argc; a++)
@@ -326,11 +324,11 @@ int main(int argc, char *argv[])
                 // open bitmap file
                 FILE *f = fopen(paletteFile, "rb");
                 if (!f) { fprintf(stderr, "Error opening palette file!\n"); return -1; }
-
+                
                 fseek(f, 0, SEEK_END);
                 int size = ftell(f);
                 fseek(f, 0, SEEK_SET);
-
+        
                 // read data
                 //if (strstr(paletteFile, ".act"))
                 if (size == 3*256)
@@ -364,7 +362,7 @@ int main(int argc, char *argv[])
                         fprintf(stderr, "Unknown palette format!\n");
                         return -1;
                 }
-
+                
                 // close file
                 fclose(f);
         }
@@ -409,7 +407,7 @@ int main(int argc, char *argv[])
                                 palette[i].rgbtGreen = paletteQ[i].rgbGreen;
                                 palette[i].rgbtBlue = paletteQ[i].rgbBlue;
                         }
-
+                        
                         if (fp && flags['i']) {
                                 writePaletteGP(paletteQ,0,fp);
                         }
@@ -417,13 +415,13 @@ int main(int argc, char *argv[])
 
                         // go to pixel data
                         fseek(fi, endiaDW(bfh.bfOffBits), SEEK_SET);
-
+                        
                         int lineSize = endiaL(bih.biWidth) * 1;
                         int dummysize = ALIGN4(lineSize) - lineSize;
                         int dummy;
-
+                        
                         unsigned char *lineData = new unsigned char [lineSize];
-
+        
                         // read & convert pixel data
                         for (int y=endiaL(bih.biHeight)-1; y>=0; y--)
                         {
@@ -446,7 +444,7 @@ int main(int argc, char *argv[])
                         int lineSize = endiaL(bih.biWidth) * 3;
                         int dummysize = ALIGN4(lineSize) - lineSize;
                         int dummy;
-
+        
                         // read pixel data
                         for (int y=endiaL(bih.biHeight)-1; y>=0; y--)
                         {
@@ -460,7 +458,7 @@ int main(int argc, char *argv[])
                         fprintf(stderr, "Unsupported bit depth!\n");
                         return -1;
                 }
-
+        
                 // close file
                 fclose(fi);
         }
@@ -484,16 +482,31 @@ int main(int argc, char *argv[])
 
                 // Mr.Mirko 2004
                 // write Header
+                /*
+                typedef struct {
+                  char magic[4];
+                  u16 size_x;
+                  u16 size_y;
+                  u16 reserved1;
+                  u16 reserved2;
+                } SHEADER; */
+
                 if (flags['x'])
                 {
-                  char sdk[]="BMP!";
+                  char sdk[]="Mr.M";
+                  short reserved=0;
                   short x = endiaL(bih.biWidth);
                   short y = endiaL(bih.biHeight);
+
+                  if (flags['r']) { printf ("Please dont rotate Sprite...\n"); }
+
                   fprintf(stderr, "X: %d\n",x);
                   fprintf(stderr, "Y: %d\n",y);
                   fwrite(&sdk, 1, 4, fo); // 4 bytes
                   fwrite(&x, 2, 1, fo);   // 1 short
                   fwrite(&y, 2, 1, fo);   // 1 short
+                  fwrite(&reserved, 2, 1, fo);// 1 short
+                  fwrite(&reserved, 2, 1, fo);// 1 short
                 }
 
                 // rotated?
