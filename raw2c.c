@@ -10,7 +10,7 @@
 #include <string.h>
 #include <time.h>
 
-#define FN_LEN	256
+#define FN_LEN	256
 
 char	srcName[FN_LEN], dstName[FN_LEN];	// file name buffers
 static char	baseFileName[FN_LEN];		// source file name without extension
