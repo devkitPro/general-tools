@@ -127,14 +127,16 @@ static void MakeSource(FILE* Infile, FILE* Outfile, FILE *Headerfile, int size) 
 int main (int argc, char* argv[]) {
 //---------------------------------------------------------------------------------
 	int elementSize;
+	int a;
+
+	FILE *fInfile, *fCfile, *fHfile;
 
 	fprintf(stderr,"Raw2C by WinterMute\n");
 	if (argc < 2) {
 		usage();
 		return -1;
 	}
-
-	for (int a=1; a<argc; a++) {
+	for (a=1; a<argc; a++) {
 
 		if (argv[a][0] == '-')
 		{
@@ -158,15 +160,15 @@ int main (int argc, char* argv[]) {
 		}
 	}
 
-	FILE *fInfile = fopen(srcName, "rb");
+	fInfile = fopen(srcName, "rb");
 
 	strcpy(dstName, ArrayName);
 	strcat(dstName, ".c");
-	FILE *fCfile = fopen(dstName, "wb");
+	fCfile = fopen(dstName, "wb");
 
 	strcpy(dstName, ArrayName);
 	strcat(dstName, ".h");
-	FILE *fHfile = fopen(dstName, "wb");
+	fHfile = fopen(dstName, "wb");
 
 	MakeSource(fInfile,fCfile,fHfile,1);
 	
