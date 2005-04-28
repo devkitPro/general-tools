@@ -9,12 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/param.h>
 
-#define FN_LEN	256
 
-char	srcName[FN_LEN], dstName[FN_LEN];	// file name buffers
-static char	baseFileName[FN_LEN];		// source file name without extension
-static char	ArrayName[FN_LEN];		// source file name without extension
+char	srcName[MAXPATHLEN], dstName[MAXPATHLEN];	// file name buffers
+static char	baseFileName[MAXPATHLEN];		// source file name without extension
+static char	ArrayName[MAXPATHLEN];		// source file name without extension
 
 //---------------------------------------------------------------------------------
 // Parse file name. Put file name without extension in
