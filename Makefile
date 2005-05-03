@@ -1,8 +1,6 @@
 ifneq (,$(findstring MINGW,$(shell uname -s)))
 	PLATFORM	:=	win32
 	exeext		:= .exe
-else
-	PLATFORM	:=	bollocks
 endif
 
 
