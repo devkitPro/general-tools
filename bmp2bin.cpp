@@ -6,6 +6,7 @@
         by Rafael Vuijk (aka Dark Fader)
 
         History:
+				V1.07 - fixed for proper endian detection
                 V1.06 - added support for MirkoSDK sprite format
                 v1.05 - palette output code for gp32 by mr.spiv
                 v1.04+ - bigendian support by mr.spiv
@@ -20,7 +21,7 @@
 // Includes                                                                 //
 //////////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
-
+#include <sys/param.h>
 //////////////////////////////////////////////////////////////////////////////
 // Defines                                                                  //
 //////////////////////////////////////////////////////////////////////////////
@@ -46,12 +47,12 @@ static BYTE endiaB( BYTE b ) {
 }
 
 static WORD endiaW( WORD w ) {
-#if defined(__BIG_ENDIAN__)
+#if BYTE_ORDER == BIG_ENDIAN
         WORD rw;
         rw = ((w >> 8) | (w << 8));
         //printf("%04x -> %04x\n",w,rw);
         return rw;
-#elif defined(__LITTLE_ENDIAN__)
+#elif BYTE_ORDER == LITTLE_ENDIAN
         return w;
 #else
 #error unknown endianess..
@@ -60,7 +61,7 @@ static WORD endiaW( WORD w ) {
 }
 
 static DWORD endiaDW( DWORD w ) {
-#if defined(__BIG_ENDIAN__)
+#if BYTE_ORDER == BIG_ENDIAN
         DWORD rw;
         WORD wu = w >> 16;
         WORD wl = w & 0xffff;
@@ -69,7 +70,7 @@ static DWORD endiaDW( DWORD w ) {
         rw = ((wl << 16) | (wu));
         //printf("%08x -> %08x\n",w,rw);
         return rw;
-#elif defined(__LITTLE_ENDIAN__)
+#elif BYTE_ORDER == LITTLE_ENDIAN
         return w;
 #else
 #error unknown endianess..
@@ -77,7 +78,7 @@ static DWORD endiaDW( DWORD w ) {
 }
 
 static LONG endiaL( LONG w ) {
-#if defined(__BIG_ENDIAN__)
+#if BYTE_ORDER == BIG_ENDIAN
         LONG rw;
         WORD wu = (WORD)(w >> 16);
         WORD wl = (WORD)(w & 0xffff);
@@ -86,7 +87,7 @@ static LONG endiaL( LONG w ) {
         rw = ((wl << 16) | (wu));
         //printf("%08x -> %08x\n",w,rw);
         return rw;
-#elif defined(__LITTLE_ENDIAN__)
+#elif BYTE_ORDER == LITTLE_ENDIAN
         return w;
 #else
 #error unknown endianess..
