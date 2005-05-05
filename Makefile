@@ -13,7 +13,7 @@ TOOLS = bmp2bin$(exeext) raw2c$(exeext)
 all: $(TOOLS)
 
 clean:
-	rm *.exe
+	rm $(TOOLS)
 	
 bmp2bin$(exeext): bmp2bin.cpp	
 	g++ $< -o $@ $(CFLAGS)
