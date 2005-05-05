@@ -1,6 +1,11 @@
+CFLAGS	:=	-O2 -s
+
 ifneq (,$(findstring MINGW,$(shell uname -s)))
-	PLATFORM	:=	win32
 	exeext		:= .exe
+endif
+
+ifneq (,$(findstring Linux,$(shell uname -s)))
+	CFLAGS += -static
 endif
 
 TOOLS = bmp2bin$(exeext) raw2c$(exeext)
@@ -11,10 +16,10 @@ clean:
 	rm *.exe
 	
 bmp2bin$(exeext): bmp2bin.cpp	
-	g++ $< -o $@ -static -O2 -s
+	g++ $< -o $@ $(CFLAGS)
 
 raw2c$(exeext): raw2c.c	
-	gcc $< -o $@ -static -O2 -s
+	gcc $< -o $@ $(CFLAGS)
 
 install:
 	cp  --target-directory=$(PREFIX) $(TOOLS)
