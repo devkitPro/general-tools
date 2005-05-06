@@ -22,4 +22,4 @@ raw2c$(exeext): raw2c.c
 	gcc $< -o $@ $(CFLAGS)
 
 install:
-	cp  --target-directory=$(PREFIX) $(TOOLS)
+	cp  $(TOOLS) $(PREFIX)
