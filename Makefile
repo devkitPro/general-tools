@@ -1,4 +1,4 @@
-CFLAGS	:=	-O2 -s
+CFLAGS	:=	-Wall -O2 -s
 
 ifneq (,$(findstring MINGW,$(shell uname -s)))
 	exeext		:= .exe
@@ -8,18 +8,23 @@ ifneq (,$(findstring Linux,$(shell uname -s)))
 	CFLAGS += -static
 endif
 
-TOOLS = bmp2bin$(exeext) raw2c$(exeext)
+tools	:=	$(patsubst %.c,%$(exeext),$(wildcard *.c)) \
+			$(patsubst %.cpp,%$(exeext),$(wildcard *.cpp))
 
-all: $(TOOLS)
+
+all:	$(tools)
 
 clean:
-	rm $(TOOLS)
-	
-bmp2bin$(exeext): bmp2bin.cpp	
-	g++ $< -o $@ $(CFLAGS)
+	@rm $(tools)
 
-raw2c$(exeext): raw2c.c	
-	gcc $< -o $@ $(CFLAGS)
+gbfs.exe	:	gbfs.c
+	$(CC) $< -o $@ $(CFLAGS) -liberty
+
+%$(exeext)	:: %.c	
+	$(CC) $< -o $@ $(CFLAGS)
+
+%$(exeext)	:: %.cpp	
+	$(CXX) $< -o $@ $(CFLAGS)
 
 install:
-	cp  $(TOOLS) $(PREFIX)
+	cp  $(tools) $(PREFIX)
