@@ -1,5 +1,7 @@
-/* padbin.c
-   pad a binary to a given size boundary
+/*
+	"$Id: padbin.c,v 1.2 2005-06-15 16:25:12 wntrmute Exp $"
+	padbin.c
+	pad a binary to a given size boundary
 
 Copyright (C) 2002  Damian Yerrick
 
@@ -32,6 +34,7 @@ this exception statement from your version.
 
 Visit http://www.pineight.com/ for more information.
 
+	"$Header: /lvm/shared/ds/ds/cvs/devkitpro-cvsbackup/tools/general/padbin.c,v 1.2 2005-06-15 16:25:12 wntrmute Exp $"
 */
 
 #include <stdio.h>
