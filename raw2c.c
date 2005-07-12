@@ -39,9 +39,9 @@ void parseFileName(char *str) {
 		baseFileName[i] = '\0';
 	}
 
-	if (cptr = strrchr(baseFileName,'\\')) {
+	if ((cptr = strrchr(baseFileName,'\\'))) {
 		strcpy(ArrayName, cptr+1);	
-	} else if (cptr = strrchr(baseFileName, '/')) {
+	} else if ((cptr = strrchr(baseFileName, '/'))) {
 		strcpy(ArrayName, cptr+1);	
 	} else {
 		strcpy(ArrayName, baseFileName);	
