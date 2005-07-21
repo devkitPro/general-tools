@@ -93,7 +93,7 @@ static void MakeSource(FILE* Infile, FILE* Outfile, FILE *Headerfile, int size) 
 	fprintf(Headerfile, head); /* Put top comment into source */
 	fprintf(Headerfile, "#ifndef _%s_h_\n",ArrayName);
 	fprintf(Headerfile, "#define _%s_h_\n\n",ArrayName);
-	fprintf(Headerfile, "extern const char %s[];\n",ArrayName);
+	fprintf(Headerfile, "extern const unsigned char %s[];\n",ArrayName);
 	fprintf(Headerfile, "extern const int %s_size;\n\n",ArrayName);
 	fprintf(Headerfile, "#endif //_%s_h_\n",ArrayName);
 
