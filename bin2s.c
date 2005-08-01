@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------
-	$Id: bin2s.c,v 1.1 2005-07-21 13:03:05 wntrmute Exp $
+	$Id: bin2s.c,v 1.2 2005-08-01 03:42:53 wntrmute Exp $
 	
 	bin2s: convert a binary file to a gcc asm module
-	for gfx/foo3.bin it'll write gfx_foo_bin (an array of char)
-	and gfx_foo_bin_size (an unsigned int)
-	for 4bit.chr it'll write _4bit_chr and _4bit_chr_size
+	for gfx/foo.bin it'll write foo_bin (an array of char)
+	foo_bin_end, and foo_bin_len (an unsigned int)
+	for 4bit.chr it'll write _4bit_chr, _4bit_chr_end, and
+	_4bit_chr_len
 
 
 	Copyright 2003 - 2005 Damian Yerrick
@@ -30,6 +31,10 @@
 	IN THE SOFTWARE.
 
 	$Log: not supported by cvs2svn $
+	Revision 1.1  2005/07/21 13:03:05  wntrmute
+	renamed labels to conform with previous bin2o
+	added user configurable alignment
+	
 
 ---------------------------------------------------------------------------------*/
 
@@ -126,7 +131,26 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
+		char *ptr = argv[arg];
+		char chr;
+		char *filename = NULL;
+		
+		while ( (chr=*ptr) ) {
 
+			if ( chr == '\\' || chr == '/') {
+				
+				filename = ptr;
+			}
+
+			ptr++;
+		}
+		
+		if ( NULL != filename ) { 
+			filename++;
+		} else {
+			filename = argv[arg];
+		}
+		
 		/*---------------------------------------------------------------------------------
 			Generate the prolog for each included file.  It has two purposes:
 			
@@ -138,13 +162,13 @@ int main(int argc, char **argv) {
 						"\t.section .rodata\n"
 						"\t.balign %d\n"
 						"\t.global ", alignment);
-		strnident(stdout, argv[arg]);
+		strnident(stdout, filename);
 		fputs("_size\n", stdout);
-		strnident(stdout, argv[arg]);
-		printf("_size: .int %lu\n\t.global ", (unsigned long)filelen);
-		strnident(stdout, argv[arg]);
+		strnident(stdout, filename);
+		printf("_len: .int %lu\n\t.global ", (unsigned long)filelen);
+		strnident(stdout, filename);
 		fputs("\n", stdout);
-		strnident(stdout, argv[arg]);
+		strnident(stdout, filename);
 		fputs(":\n\t.byte ", stdout);
 
 		linelen = 0;
@@ -169,9 +193,9 @@ int main(int argc, char **argv) {
 		}
 
 		fputs("\n\n\t.global ", stdout);
-		strnident(stdout, argv[arg]);
+		strnident(stdout, filename);
 		fputs("_end\n", stdout);
-		strnident(stdout, argv[arg]);
+		strnident(stdout, filename);
 		fputs("_end:\n\n", stdout);
 
 
