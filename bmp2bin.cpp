@@ -42,10 +42,10 @@ typedef int LONG;
 // Convert Little Endian to Big Endian..
 //
 
-static BYTE endiaB( BYTE b ) {
+/*static BYTE endiaB( BYTE b ) {
         return b;
 }
-
+*/
 static WORD endiaW( WORD w ) {
 #if BYTE_ORDER == BIG_ENDIAN
         WORD rw;
@@ -524,7 +524,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                        RGBTRIPLE *p = imageData;
+//                        RGBTRIPLE *p = imageData;
                         for (int y=0; y<endiaL(bih.biHeight); y++)
                         {
                                 for (int x=0; x<endiaL(bih.biWidth); x++)
