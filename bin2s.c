@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------
-	$Id: bin2s.c,v 1.2 2005-08-01 03:42:53 wntrmute Exp $
+	$Id: bin2s.c,v 1.3 2005-08-03 05:14:53 wntrmute Exp $
 	
 	bin2s: convert a binary file to a gcc asm module
 	for gfx/foo.bin it'll write foo_bin (an array of char)
@@ -31,6 +31,9 @@
 	IN THE SOFTWARE.
 
 	$Log: not supported by cvs2svn $
+	Revision 1.2  2005/08/01 03:42:53  wntrmute
+	strip path from input file
+	
 	Revision 1.1  2005/07/21 13:03:05  wntrmute
 	renamed labels to conform with previous bin2o
 	added user configurable alignment
@@ -165,7 +168,7 @@ int main(int argc, char **argv) {
 		strnident(stdout, filename);
 		fputs("_size\n", stdout);
 		strnident(stdout, filename);
-		printf("_len: .int %lu\n\t.global ", (unsigned long)filelen);
+		printf("_size: .int %lu\n\t.global ", (unsigned long)filelen);
 		strnident(stdout, filename);
 		fputs("\n", stdout);
 		strnident(stdout, filename);
