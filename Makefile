@@ -17,7 +17,7 @@ all:	$(tools)
 clean:
 	@rm $(tools)
 
-gbfs.exe	:	gbfs.c
+gbfs$(exeext)	:	gbfs.c
 	$(CC) $< -o $@ $(CFLAGS) -liberty
 
 %$(exeext)	:: %.c	
