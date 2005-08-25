@@ -15,15 +15,15 @@ tools	:=	$(patsubst %.c,%$(exeext),$(wildcard *.c)) \
 all:	$(tools)
 
 clean:
-	@rm $(tools)
+	@rm -f $(tools)
 
 gbfs$(exeext)	:	gbfs.c
 	$(CC) $< -o $@ $(CFLAGS) -liberty
 
-%$(exeext)	:: %.c	
+%$(exeext)	:: %.c
 	$(CC) $< -o $@ $(CFLAGS)
 
-%$(exeext)	:: %.cpp	
+%$(exeext)	:: %.cpp
 	$(CXX) $< -o $@ $(CFLAGS)
 
 install:
