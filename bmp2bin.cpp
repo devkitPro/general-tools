@@ -268,6 +268,7 @@ void WritePixelGP32(const RGBTRIPLE *p)         // 'p': 16 bits (r5g5b5x1, GameP
 void WritePixelGB(const RGBTRIPLE *p)           // 'g': 16 bits (x1b5g5r5, GameBoy)
 {
         unsigned short out = (p->rgbtBlue>>3<<10) | (p->rgbtGreen>>3<<5) | (p->rgbtRed>>3<<0);
+        if ( flags['d']) out |= 0x8000;
         fwrite(&out, 2, 1, fo);
 }
 
@@ -294,7 +295,7 @@ int main(int argc, char *argv[])
                         else if (!outPaletteFile) outPaletteFile = argv[a];
                         else
                         {
-                                fprintf(stderr, "Error: Too many filesnames given!\n");
+                                fprintf(stderr, "Error: Too many filenames given!\n");
                         }
                 }
         }
@@ -302,8 +303,7 @@ int main(int argc, char *argv[])
         // show help
         if (flags['?'] || flags['h'] || !inputFile || !outputFile)
         {
-                fprintf(stderr, "bmp2bin "VER" by Rafael Vuijk (aka Dark Fader)\n");
-                fprintf(stderr, "bmp2bin "VERF" by Jouni Korhonen (aka Mr.Spiv)\n");
+                fprintf(stderr, "bmp2bin "VER"\n");
                 fprintf(stderr, "\n");
                 fprintf(stderr, "Syntax: bmp2bin [-flags] <input.bmp> <output.raw> [<palette.txt>]\n");
                 fprintf(stderr, "\n");
@@ -312,6 +312,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "  -e                  8 bits output, b2g3r3)\n");
                 fprintf(stderr, "  -1 palette.act      8 bits output, palette quantization method 1\n");
                 fprintf(stderr, "  -g                  16 bits output, x1b5g5r5, GameBoy\n");
+                fprintf(stderr, "  -d                  16 bits output, x1b5g5r5, DS, x bit set\n");
                 fprintf(stderr, "  -p                  16 bits output, r5g5b5x1, GP32 (default)\n");
                 fprintf(stderr, "  -t                  24 bits output, b8g8r8\n");
                 fprintf(stderr, "  -r                  rotate 90 degrees clockwise\n");
@@ -470,7 +471,7 @@ int main(int argc, char *argv[])
         // select pixel writer
         writePixel = WritePixelGP32;
         if (flags['p']) writePixel = WritePixelGP32;
-        if (flags['g']) writePixel = WritePixelGB;
+        if (flags['g'] || flags['d'] ) writePixel = WritePixelGB;
         if (flags['i']) writePixel = WritePixelGP8;
         if (flags['e']) writePixel = WritePixel8;
         if (flags['t']) writePixel = WritePixel24;
