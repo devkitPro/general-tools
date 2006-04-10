@@ -1,4 +1,4 @@
-CFLAGS	:=	-Wall -O2 -s
+CFLAGS	:=	-Wall -Wno-char-subscripts -O2 -s
 
 ifneq (,$(findstring MINGW,$(shell uname -s)))
 	exeext		:= .exe
@@ -9,7 +9,7 @@ ifneq (,$(findstring Linux,$(shell uname -s)))
 endif
 
 tools	:=	$(patsubst %.c,%$(exeext),$(wildcard *.c)) \
-			$(patsubst %.cpp,%$(exeext),$(wildcard *.cpp))
+		$(patsubst %.cpp,%$(exeext),$(wildcard *.cpp))
 
 
 all:	$(tools)
