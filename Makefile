@@ -1,3 +1,5 @@
+CC	:=	gcc
+
 CFLAGS	:=	-Wall -Wno-char-subscripts -O2 -s
 
 ifneq (,$(findstring MINGW,$(shell uname -s)))
