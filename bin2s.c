@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------
-	$Id: bin2s.c,v 1.3 2005-08-03 05:14:53 wntrmute Exp $
+	$Id: bin2s.c,v 1.4 2008-02-08 18:46:12 wntrmute Exp $
 	
 	bin2s: convert a binary file to a gcc asm module
 	for gfx/foo.bin it'll write foo_bin (an array of char)
@@ -29,15 +29,6 @@
 	AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 	OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 	IN THE SOFTWARE.
-
-	$Log: not supported by cvs2svn $
-	Revision 1.2  2005/08/01 03:42:53  wntrmute
-	strip path from input file
-	
-	Revision 1.1  2005/07/21 13:03:05  wntrmute
-	renamed labels to conform with previous bin2o
-	added user configurable alignment
-	
 
 ---------------------------------------------------------------------------------*/
 
@@ -167,8 +158,7 @@ int main(int argc, char **argv) {
 						"\t.global ", alignment);
 		strnident(stdout, filename);
 		fputs("_size\n", stdout);
-		strnident(stdout, filename);
-		printf("_size: .int %lu\n\t.global ", (unsigned long)filelen);
+		fputs("\t.global ", stdout);
 		strnident(stdout, filename);
 		fputs("\n", stdout);
 		strnident(stdout, filename);
@@ -176,14 +166,16 @@ int main(int argc, char **argv) {
 
 		linelen = 0;
 
-		while(filelen > 0) {
+		int count = filelen;
+		
+		while(count > 0) {
 			unsigned char c = fgetc(fin);
 			
 			printf("%3u", (unsigned int)c);
-			filelen--;
+			count--;
 			
 			/* don't put a comma after the last item */
-			if(filelen) {
+			if(count) {
 
 				/* break after every 16th number */
 				if(++linelen >= 16) {
@@ -200,7 +192,8 @@ int main(int argc, char **argv) {
 		fputs("_end\n", stdout);
 		strnident(stdout, filename);
 		fputs("_end:\n\n", stdout);
-
+		strnident(stdout, filename);
+		fprintf( stdout, "_size: .int %lu\n", (unsigned long)filelen);
 
 		fclose(fin);
 	}
