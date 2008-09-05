@@ -191,6 +191,7 @@ int main(int argc, char **argv) {
 		fputs("_end\n", stdout);
 		strnident(stdout, filename);
 		fputs("_end:\n\n", stdout);
+		fputs("\t.align\n",stdout);
 		strnident(stdout, filename);
 		fprintf( stdout, "_size: .int %lu\n", (unsigned long)filelen);
 
