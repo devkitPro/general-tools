@@ -1,4 +1,3 @@
-COPYING
 INSTALL
 Makefile.in
 aclocal.m4
@@ -9,3 +8,14 @@ configure
 depcomp
 install-sh
 missing
+compile
+.deps
+Makefile
+config.status
+config.log
+*.o
+bmp2bin*
+bin2s*
+padbin*
+raw2c*
+*.bz2
