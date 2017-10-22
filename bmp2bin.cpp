@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
         // show help
         if (flags['?'] || flags['h'] || !inputFile || !outputFile)
         {
-                fprintf(stderr, "bmp2bin "VER"\n");
+                fprintf(stderr, "bmp2bin " VER "\n");
                 fprintf(stderr, "\n");
                 fprintf(stderr, "Syntax: bmp2bin [-flags] <input.bmp> <output.raw> [<palette.txt>]\n");
                 fprintf(stderr, "\n");
