@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
 		switch(c) {
 			case 'h':
 			showhelp(argv[0]);
+			return 1;
 			case 'a':
 			alignment = strtoul(optarg,0,0);
 			break;
