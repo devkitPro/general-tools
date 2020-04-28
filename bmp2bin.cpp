@@ -6,7 +6,8 @@
         by Rafael Vuijk (aka Dark Fader)
 
         History:
-				V1.07 - fixed for proper endian detection
+	        V1.08 - added RGB565 support
+		V1.07 - fixed for proper endian detection
                 V1.06 - added support for MirkoSDK sprite format
                 v1.05 - palette output code for gp32 by mr.spiv
                 v1.04+ - bigendian support by mr.spiv
