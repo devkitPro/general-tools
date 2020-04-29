@@ -266,9 +266,9 @@ void WritePixelGP32(const RGBTRIPLE *p)         // 'p': 16 bits (r5g5b5x1, GameP
 //////////////////////////////////////////////////////////////////////////////
 // WritePixelGP2X                                                           //
 //////////////////////////////////////////////////////////////////////////////
-void WritePixelGP2X(const RGBTRIPLE *p)         // 'p': 16 bits (r5g6b5, GP2X)
+void WritePixelGP2X(const RGBTRIPLE *p)         // '2': 16 bits (r5g6b5, GP2X)
 {
-        unsigned short out = endiaW((p->rgbtBlue>>3) | (p->rgbtGreen>>2<<5) | (p->rgbtRed>>3<<11));
+        unsigned short out = endiaW((p->rgbtBlue>>3) | ((p->rgbtGreen&0xFC) << 3) | ((p->rgbtRed&0xF8)<<8));
         fwrite(&out, 2, 1, fo);
 }
 
@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "  -g                  16 bits output, x1b5g5r5, GameBoy\n");
                 fprintf(stderr, "  -d                  16 bits output, x1b5g5r5, DS, x bit set\n");
                 fprintf(stderr, "  -p                  16 bits output, r5g5b5x1, GP32 (default)\n");
-                fprintf(stderr, "  -2                  16 bits output, r5g6b5, GP2X\n");
+                fprintf(stderr, "  -q                  16 bits output, r5g6b5, GP2X\n");
                 fprintf(stderr, "  -t                  24 bits output, b8g8r8\n");
                 fprintf(stderr, "  -r                  rotate 90 degrees clockwise\n");
                 fprintf(stderr, "  -x                  write sprite header, Mr.Mirko SDK\n");
@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
         // select pixel writer
         writePixel = WritePixelGP32;
         if (flags['p']) writePixel = WritePixelGP32;
-	if (flags['2']) writePixel = WritePixelGP2X;
+	if (flags['q']) writePixel = WritePixelGP2X;
         if (flags['g'] || flags['d'] ) writePixel = WritePixelGB;
         if (flags['i']) writePixel = WritePixelGP8;
         if (flags['e']) writePixel = WritePixel8;
