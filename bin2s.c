@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
 		if (apple_llvm) {
 			fprintf( stdout, "\t.const_data\n");
 		} else {
-			fprintf( stdout,"\t.section .rodata\n");
+			fprintf( stdout,"\t.section .rodata.%s, \"a\"\n", strnident(filename, apple_llvm) );
 		}
 
 		fprintf( stdout, "\t.balign %d\n", alignment);
