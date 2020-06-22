@@ -6,7 +6,8 @@
         by Rafael Vuijk (aka Dark Fader)
 
         History:
-				V1.07 - fixed for proper endian detection
+	        V1.08 - added RGB565 support
+		V1.07 - fixed for proper endian detection
                 V1.06 - added support for MirkoSDK sprite format
                 v1.05 - palette output code for gp32 by mr.spiv
                 v1.04+ - bigendian support by mr.spiv
@@ -25,7 +26,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Defines                                                                  //
 //////////////////////////////////////////////////////////////////////////////
-#define VER                                     "1.04"
+#define VER                                     "1.08"
 #define VERF                                    "1.05"
 #define ALIGN4(n)                       (((n)+3) &~ 3)
 
@@ -263,6 +264,15 @@ void WritePixelGP32(const RGBTRIPLE *p)         // 'p': 16 bits (r5g5b5x1, GameP
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// WritePixelGP2X                                                           //
+//////////////////////////////////////////////////////////////////////////////
+void WritePixelGP2X(const RGBTRIPLE *p)         // '2': 16 bits (r5g6b5, GP2X)
+{
+        unsigned short out = endiaW((p->rgbtBlue>>3) | ((p->rgbtGreen&0xFC) << 3) | ((p->rgbtRed&0xF8)<<8));
+        fwrite(&out, 2, 1, fo);
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // WritePixelGB                                                             //
 //////////////////////////////////////////////////////////////////////////////
 void WritePixelGB(const RGBTRIPLE *p)           // 'g': 16 bits (x1b5g5r5, GameBoy)
@@ -314,6 +324,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "  -g                  16 bits output, x1b5g5r5, GameBoy\n");
                 fprintf(stderr, "  -d                  16 bits output, x1b5g5r5, DS, x bit set\n");
                 fprintf(stderr, "  -p                  16 bits output, r5g5b5x1, GP32 (default)\n");
+                fprintf(stderr, "  -q                  16 bits output, r5g6b5, GP2X\n");
                 fprintf(stderr, "  -t                  24 bits output, b8g8r8\n");
                 fprintf(stderr, "  -r                  rotate 90 degrees clockwise\n");
                 fprintf(stderr, "  -x                  write sprite header, Mr.Mirko SDK\n");
@@ -471,6 +482,7 @@ int main(int argc, char *argv[])
         // select pixel writer
         writePixel = WritePixelGP32;
         if (flags['p']) writePixel = WritePixelGP32;
+	if (flags['q']) writePixel = WritePixelGP2X;
         if (flags['g'] || flags['d'] ) writePixel = WritePixelGB;
         if (flags['i']) writePixel = WritePixelGP8;
         if (flags['e']) writePixel = WritePixel8;
