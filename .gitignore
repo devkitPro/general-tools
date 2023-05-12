@@ -18,4 +18,5 @@ bmp2bin*
 bin2s*
 padbin*
 raw2c*
+generate_compile_commands
 *.bz2

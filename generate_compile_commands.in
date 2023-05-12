@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+dir=`pwd`
+
+if [ $# -eq 0 ]; then
+  echo "Usage: add command arguments file"
+  echo "       end"
+  exit 1
+fi
+
+if [ "$1" == "end" ]; then
+
+  echo "]" >> compile_commands.part
+  mv compile_commands.part compile_commands.json
+
+elif [ "$1" == "add" ]; then
+
+  if [ ! -f compile_commands.part ]; then
+    echo "[" > compile_commands.part
+  else
+    echo "," >> compile_commands.part
+  fi
+
+  echo "{" >> compile_commands.part
+
+  echo "\"directory\": \"${dir}\"," >> compile_commands.part
+
+  command=`which $2`
+
+  echo "\"command\": \"${command} $3\"," >> compile_commands.part
+
+  echo "\"file\": \"$4\"" >> compile_commands.part
+
+  echo "}" >> compile_commands.part
+else
+  echo "Usage: add command arguments file"
+  echo "       end"
+  exit 1
+fi
