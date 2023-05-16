@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+exec 200>/tmp/compile_commands.lock
+
+flock 200
+
 dir=`pwd`
 
 if [ $# -eq 0 ]; then
@@ -23,13 +27,13 @@ elif [ "$1" == "add" ]; then
 
   echo "{" >> compile_commands.part
 
-  echo "\"directory\": \"${dir}\"," >> compile_commands.part
+  echo "  \"directory\": \"${dir}\"," >> compile_commands.part
 
   command=`which $2`
 
-  echo "\"command\": \"${command} $3\"," >> compile_commands.part
+  echo "  \"command\": \"${command} $3\"," >> compile_commands.part
 
-  echo "\"file\": \"$4\"" >> compile_commands.part
+  echo "  \"file\": \"$4\"" >> compile_commands.part
 
   echo "}" >> compile_commands.part
 else
@@ -37,3 +41,5 @@ else
   echo "       end"
   exit 1
 fi
+
+flock -u 200
