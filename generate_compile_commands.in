@@ -77,16 +77,14 @@ elif [ "$1" == "add" ]; then
   echo "  \"directory\": \"${dir}\"," >> compile_commands.part
 
   _command=`which $2`
+  _args=${3//\"/\\\"}
 
   if [[ "${os}" == "Msys" ]]; then
-    command=`cygpath -ma ${_command}`
-    _args=$(translate_args "$3")
-  else
-    command=${_command}
-    _args=$3
+    _command=`cygpath -ma ${_command}`
+    _args=$(translate_args $_args)
   fi
 
-  echo "  \"command\": \"${command} ${_args}\"," >> compile_commands.part
+  echo "  \"command\": \"${_command} ${_args}\"," >> compile_commands.part
 
   if [[ "${os}" == "Msys" ]]; then
     file=`cygpath -ma $4`
