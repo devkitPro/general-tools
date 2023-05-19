@@ -38,7 +38,7 @@ translate_args() {
     esac
    _newargs+=" ${strarr[$i]}"
   done
-  echo "${_newargs}"
+  echo "${_newargs//\"/\\\"}"
 }
 
 exec 200>/tmp/compile_commands.lock
@@ -81,7 +81,7 @@ elif [ "$1" == "add" ]; then
 
   if [[ "${os}" == "Msys" ]]; then
     _command=`cygpath -ma ${_command}`
-    _args=$(translate_args $_args)
+    _args=$(translate_args "$_args")
   fi
 
   echo "  \"command\": \"${_command} ${_args}\"," >> compile_commands.part
