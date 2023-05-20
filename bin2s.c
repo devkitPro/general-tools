@@ -269,12 +269,12 @@ int main(int argc, char **argv) {
 		fputs("_end:\n\n", stdout);
 
 		if (output_header) {
-			fprintf(header_file, "extern const uint8_t %s[];\n", strnident(filename, apple_llvm));
-			fprintf(header_file, "extern const uint8_t %s_end[];\n", strnident(filename, apple_llvm));
+			fprintf(header_file, "extern const uint8_t %s[];\n", strnident(filename, 0));
+			fprintf(header_file, "extern const uint8_t %s_end[];\n", strnident(filename, 0));
 			fprintf(header_file, "#if __cplusplus >= 201103L\n");
-			fprintf(header_file, "static constexpr size_t %s_size=%lu;\n", strnident(filename, apple_llvm), (unsigned long)filelen);
+			fprintf(header_file, "static constexpr size_t %s_size=%lu;\n", strnident(filename, 0), (unsigned long)filelen);
 			fprintf(header_file, "#else\n");
-			fprintf(header_file, "static const size_t %s_size=%lu;\n", strnident(filename, apple_llvm), (unsigned long)filelen);
+			fprintf(header_file, "static const size_t %s_size=%lu;\n", strnident(filename, 0), (unsigned long)filelen);
 			fprintf(header_file, "#endif\n");
 		} else {
 			fprintf(stdout,"\t.global ");
