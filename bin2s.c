@@ -285,7 +285,7 @@ int main(int argc, char **argv) {
 			fprintf( stdout, "_size: .int %lu\n", (unsigned long)filelen);
 		}
 
-		fputs("\n\n#if defined(__linux__) && defined(__ELF__)\n.section .note.GNU-stack,\"\",%progbits\n#endif", stdout);
+		fputs("\n\n#if defined(__linux__) && defined(__ELF__)\n.section .note.GNU-stack,\"\",%progbits\n#endif\n", stdout);
 		fclose(fin);
 	}
 
